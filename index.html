@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Goal Tracker</title>
+<meta name="description" content="Daily SMART goal tracker for wellbeing">
+<meta name="theme-color" content="#4A7C6F">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Goals">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600&display=swap');
+
+  :root {
+    --bg: #F7F5F2;
+    --surface: #FFFFFF;
+    --ink: #1C1C1E;
+    --ink-soft: #6B6B6B;
+    --ink-faint: #C4BFB8;
+    --accent: #4A7C6F;
+    --accent-light: #E8F1EF;
+    --accent-dark: #355A51;
+    --warn: #C0602A;
+    --warn-light: #FBF0EB;
+    --gold: #B8932A;
+    --gold-light: #FBF5E6;
+    --radius: 14px;
+    --radius-sm: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    padding-bottom: 40px;
+  }
+
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid #ECEAE7;
+    padding: 20px 24px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .header-inner {
+    max-width: 680px;
+    margin: 0 auto;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .header-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.5rem;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+  }
+
+  .header-date {
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    white-space: nowrap;
+  }
+
+  .week-nav {
+    background: var(--surface);
+    border-bottom: 1px solid #ECEAE7;
+    padding: 10px 24px;
+  }
+
+  .week-nav-inner {
+    max-width: 680px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .week-label {
+    flex: 1;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+    text-align: center;
+  }
+
+  .week-btn {
+    background: none;
+    border: 1px solid var(--ink-faint);
+    border-radius: var(--radius-sm);
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    font-size: 1rem;
+    color: var(--ink-soft);
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+  .week-btn:hover { background: var(--bg); color: var(--ink); }
+
+  .main {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 24px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* Day strip */
+  .day-strip {
+    display: flex;
+    gap: 6px;
+    justify-content: space-between;
+  }
+
+  .day-chip {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 10px 4px;
+    background: var(--surface);
+    border: 2px solid transparent;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+  }
+
+  .day-chip:hover { border-color: var(--accent-light); }
+  .day-chip.active { border-color: var(--accent); background: var(--accent-light); }
+  .day-chip.today .day-num { color: var(--accent); font-weight: 700; }
+
+  .day-name {
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ink-soft);
+  }
+
+  .day-num {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  .day-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--ink-faint);
+  }
+
+  .day-dot.has-ticks { background: var(--accent); }
+
+  /* Goal cards */
+  .goal-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+
+  .goal-header {
+    padding: 16px 18px 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .goal-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  .goal-text { flex: 1; min-width: 0; }
+
+  .goal-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--ink);
+    line-height: 1.3;
+    margin-bottom: 3px;
+  }
+
+  .goal-desc {
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    line-height: 1.4;
+  }
+
+  .goal-body {
+    padding: 0 18px 16px;
+  }
+
+  /* Progress bar */
+  .progress-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+
+  .progress-bar-wrap {
+    flex: 1;
+    height: 6px;
+    background: var(--bg);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .progress-bar-fill {
+    height: 100%;
+    border-radius: 99px;
+    background: var(--accent);
+    transition: width 0.4s ease;
+  }
+
+  .progress-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+    white-space: nowrap;
+  }
+
+  /* Tick row */
+  .tick-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .tick-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-sm);
+    border: 2px solid var(--ink-faint);
+    background: var(--bg);
+    cursor: pointer;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    user-select: none;
+  }
+
+  .tick-btn:hover { border-color: var(--accent); }
+
+  .tick-btn.ticked {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+    font-size: 1rem;
+  }
+
+  /* Streak badge */
+  .streak-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--gold);
+    background: var(--gold-light);
+    padding: 3px 8px;
+    border-radius: 99px;
+    margin-top: 10px;
+  }
+
+  /* Add goal */
+  .add-btn {
+    width: 100%;
+    padding: 14px;
+    background: none;
+    border: 2px dashed var(--ink-faint);
+    border-radius: var(--radius);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .add-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: var(--accent-light);
+  }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+
+  .modal-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .modal {
+    background: var(--surface);
+    border-radius: 20px 20px 0 0;
+    padding: 24px;
+    width: 100%;
+    max-width: 680px;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .modal-overlay.open .modal {
+    transform: translateY(0);
+  }
+
+  .modal-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+  }
+
+  .form-group {
+    margin-bottom: 16px;
+  }
+
+  label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  input[type="text"], textarea, select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid #DEDAD5;
+    border-radius: var(--radius-sm);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    color: var(--ink);
+    background: var(--bg);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  input[type="text"]:focus,
+  textarea:focus,
+  select:focus { border-color: var(--accent); }
+
+  textarea { resize: vertical; min-height: 70px; }
+
+  .emoji-grid {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .emoji-opt {
+    width: 42px;
+    height: 42px;
+    border: 2px solid #DEDAD5;
+    border-radius: var(--radius-sm);
+    background: var(--bg);
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+  }
+
+  .emoji-opt.selected {
+    border-color: var(--accent);
+    background: var(--accent-light);
+  }
+
+  .color-grid {
+    display: flex;
+    gap: 8px;
+  }
+
+  .color-opt {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 3px solid transparent;
+    transition: all 0.15s;
+  }
+
+  .color-opt.selected {
+    border-color: var(--ink);
+    transform: scale(1.15);
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .btn {
+    flex: 1;
+    padding: 14px;
+    border-radius: var(--radius-sm);
+    border: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+  }
+
+  .btn-primary:hover { background: var(--accent-dark); }
+
+  .btn-ghost {
+    background: var(--bg);
+    color: var(--ink-soft);
+  }
+
+  .btn-ghost:hover { background: #ECEAE7; }
+
+  .btn-danger {
+    background: var(--warn-light);
+    color: var(--warn);
+    flex: 0 0 auto;
+    padding: 14px 18px;
+  }
+
+  /* Weekly summary */
+  .summary-card {
+    background: var(--accent-light);
+    border: 1.5px solid #C5DDD9;
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+
+  .summary-big {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.2rem;
+    color: var(--accent-dark);
+    line-height: 1;
+  }
+
+  .summary-text {
+    flex: 1;
+  }
+
+  .summary-title {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--accent-dark);
+    margin-bottom: 3px;
+  }
+
+  .summary-sub {
+    font-size: 0.78rem;
+    color: var(--accent);
+  }
+
+  .section-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-faint);
+    padding: 0 2px;
+    margin-bottom: -8px;
+  }
+
+  .goal-card-actions {
+    display: flex;
+    gap: 6px;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  .icon-btn {
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink-faint);
+    font-size: 0.85rem;
+    transition: all 0.15s;
+    padding: 0;
+  }
+
+  .icon-btn:hover { background: var(--bg); color: var(--ink-soft); }
+
+  /* Notes area */
+  .goal-notes-wrap {
+    padding: 0 18px 16px;
+    border-top: 1px solid #F0EDE9;
+    margin-top: 2px;
+  }
+
+  .notes-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-faint);
+    margin-bottom: 6px;
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .goal-notes-textarea {
+    width: 100%;
+    min-height: 72px;
+    padding: 10px 12px;
+    background: var(--bg);
+    border: 1.5px solid #E0DDD8;
+    border-radius: var(--radius-sm);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    color: var(--ink);
+    line-height: 1.5;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .goal-notes-textarea:focus {
+    border-color: var(--accent);
+  }
+
+  .goal-notes-textarea::placeholder {
+    color: var(--ink-faint);
+  }
+
+  .notes-saved-indicator {
+    font-size: 0.7rem;
+    color: var(--accent);
+    margin-top: 4px;
+    height: 14px;
+    transition: opacity 0.3s;
+    opacity: 0;
+  }
+
+  .notes-saved-indicator.show { opacity: 1; }
+
+  /* Toggle switch for modal */
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 0;
+  }
+
+  .toggle-label-text {
+    font-size: 0.88rem;
+    color: var(--ink);
+  }
+
+  .toggle-switch {
+    position: relative;
+    width: 42px;
+    height: 24px;
+    flex-shrink: 0;
+  }
+
+  .toggle-switch input { opacity: 0; width: 0; height: 0; }
+
+  .toggle-track {
+    position: absolute;
+    inset: 0;
+    background: var(--ink-faint);
+    border-radius: 99px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .toggle-track::after {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: white;
+    top: 3px;
+    left: 3px;
+    transition: transform 0.2s;
+  }
+
+  .toggle-switch input:checked + .toggle-track { background: var(--accent); }
+  .toggle-switch input:checked + .toggle-track::after { transform: translateX(18px); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <span class="header-title">My Goals</span>
+    <span class="header-date" id="headerDate"></span>
+  </div>
+</header>
+
+<div class="week-nav">
+  <div class="week-nav-inner">
+    <button class="week-btn" id="prevWeek">‹</button>
+    <span class="week-label" id="weekLabel"></span>
+    <button class="week-btn" id="nextWeek">›</button>
+  </div>
+</div>
+
+<div class="main">
+  <div class="day-strip" id="dayStrip"></div>
+  <div class="summary-card" id="summaryCard">
+    <div class="summary-big" id="summaryPct">—</div>
+    <div class="summary-text">
+      <div class="summary-title" id="summaryTitle">This week</div>
+      <div class="summary-sub" id="summarySub">No goals ticked yet today</div>
+    </div>
+  </div>
+  <div class="section-label">Your Goals</div>
+  <div id="goalsList"></div>
+  <button class="add-btn" id="addGoalBtn">＋ Add a goal</button>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-title" id="modalTitle">New Goal</div>
+    <div class="form-group">
+      <label>Goal title</label>
+      <input type="text" id="inputTitle" placeholder="e.g. Grounding when I notice spiralling">
+    </div>
+    <div class="form-group">
+      <label>Description (optional)</label>
+      <textarea id="inputDesc" placeholder="Brief note about what this involves..."></textarea>
+    </div>
+    <div class="form-group">
+      <label>Target days per week</label>
+      <select id="inputTarget">
+        <option value="1">1 day</option>
+        <option value="2">2 days</option>
+        <option value="3" selected>3 days</option>
+        <option value="4">4 days</option>
+        <option value="5">5 days</option>
+        <option value="6">6 days</option>
+        <option value="7">7 days (daily)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Notes field</label>
+      <div class="toggle-row">
+        <span class="toggle-label-text">Show a daily writing space on this goal</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="inputHasNotes">
+          <span class="toggle-track"></span>
+        </label>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Icon</label>
+      <div class="emoji-grid" id="emojiGrid"></div>
+    </div>
+    <div class="form-group">
+      <label>Colour</label>
+      <div class="color-grid" id="colorGrid"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="modalCancel">Cancel</button>
+      <button class="btn btn-danger" id="modalDelete" style="display:none">Delete</button>
+      <button class="btn btn-primary" id="modalSave">Save goal</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const EMOJIS = ['🧘','🚶','📔','🌿','💬','☀️','🎯','💪','🌊','🎵','🍃','❤️'];
+const COLORS = [
+  {bg:'#E8F1EF', icon:'#4A7C6F'},
+  {bg:'#EEF0FB', icon:'#5A62C3'},
+  {bg:'#FBF5E6', icon:'#B8932A'},
+  {bg:'#FBEEF0', icon:'#C04A5A'},
+  {bg:'#F0EEFB', icon:'#7A4AC0'},
+  {bg:'#EAF5FB', icon:'#2A82B8'},
+];
+
+const DEFAULT_GOALS = [
+  {id:'g1', title:'Grounding technique', desc:'5-4-3-2-1 senses when spiralling starts', emoji:'🧘', colorIdx:0, target:5},
+  {id:'g2', title:'Worry window', desc:'10 min evening writing, then close notebook', emoji:'📔', colorIdx:1, target:3, hasNotes:true},
+  {id:'g3', title:'One enjoyable activity', desc:'Short walk, coffee outside, or reading', emoji:'🚶', colorIdx:2, target:4},
+  {id:'g4', title:'Wind-down routine', desc:'20 min screen-free before sleep', emoji:'🌿', colorIdx:5, target:3},
+  {id:'g5', title:'Thought challenge', desc:'Write one unhelpful thought and question its evidence', emoji:'💬', colorIdx:3, target:3, hasNotes:true},
+];
+
+let state = {
+  goals: [],
+  ticks: {}, // key: "goalId_YYYY-MM-DD" => true
+  weekOffset: 0,
+};
+
+function loadState() {
+  try {
+    const s = localStorage.getItem('goalTrackerState');
+    if (s) state = JSON.parse(s);
+    if (!state.goals || state.goals.length === 0) state.goals = DEFAULT_GOALS;
+    if (!state.ticks) state.ticks = {};
+    if (!state.notes) state.notes = {};
+    if (state.weekOffset === undefined) state.weekOffset = 0;
+  } catch(e) {
+    state.goals = DEFAULT_GOALS;
+    state.ticks = {};
+    state.notes = {};
+    state.weekOffset = 0;
+  }
+}
+
+function saveState() {
+  localStorage.setItem('goalTrackerState', JSON.stringify(state));
+}
+
+function getMonday(date) {
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = (day === 0 ? -6 : 1 - day);
+  d.setDate(d.getDate() + diff);
+  d.setHours(0,0,0,0);
+  return d;
+}
+
+function dateKey(date) {
+  return date.toISOString().slice(0,10);
+}
+
+function tickKey(goalId, date) {
+  return `${goalId}_${dateKey(date)}`;
+}
+
+function noteKey(goalId, date) {
+  return `note_${goalId}_${dateKey(date)}`;
+}
+
+function today() {
+  const d = new Date();
+  d.setHours(0,0,0,0);
+  return d;
+}
+
+function getWeekDays(offset) {
+  const monday = getMonday(today());
+  monday.setDate(monday.getDate() + offset * 7);
+  return Array.from({length:7}, (_,i) => {
+    const d = new Date(monday);
+    d.setDate(d.getDate() + i);
+    return d;
+  });
+}
+
+const DAY_NAMES = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+let selectedDay = today();
+
+function renderHeader() {
+  const opts = {weekday:'long', day:'numeric', month:'long'};
+  document.getElementById('headerDate').textContent = today().toLocaleDateString('en-GB', opts);
+}
+
+function renderWeekNav() {
+  const days = getWeekDays(state.weekOffset);
+  const start = days[0].toLocaleDateString('en-GB', {day:'numeric', month:'short'});
+  const end = days[6].toLocaleDateString('en-GB', {day:'numeric', month:'short'});
+  document.getElementById('weekLabel').textContent = `${start} – ${end}`;
+}
+
+function hasTicks(date) {
+  return state.goals.some(g => state.ticks[tickKey(g.id, date)]);
+}
+
+function renderDayStrip() {
+  const days = getWeekDays(state.weekOffset);
+  const strip = document.getElementById('dayStrip');
+  strip.innerHTML = '';
+  days.forEach((d, i) => {
+    const chip = document.createElement('div');
+    chip.className = 'day-chip';
+    if (dateKey(d) === dateKey(today())) chip.classList.add('today');
+    if (dateKey(d) === dateKey(selectedDay)) chip.classList.add('active');
+    chip.innerHTML = `
+      <span class="day-name">${DAY_NAMES[i]}</span>
+      <span class="day-num">${d.getDate()}</span>
+      <span class="day-dot ${hasTicks(d) ? 'has-ticks' : ''}"></span>
+    `;
+    chip.addEventListener('click', () => {
+      selectedDay = d;
+      renderDayStrip();
+      renderGoals();
+      renderSummary();
+    });
+    strip.appendChild(chip);
+  });
+}
+
+function getWeekTicks(goalId) {
+  const days = getWeekDays(state.weekOffset);
+  return days.filter(d => state.ticks[tickKey(goalId, d)]).length;
+}
+
+function getTotalTicksThisWeek() {
+  const days = getWeekDays(state.weekOffset);
+  let total = 0, possible = 0;
+  state.goals.forEach(g => {
+    possible += g.target;
+    total += days.filter(d => state.ticks[tickKey(g.id, d)]).length;
+  });
+  return {total, possible};
+}
+
+function renderSummary() {
+  const {total, possible} = getTotalTicksThisWeek();
+  const pct = possible > 0 ? Math.round(total / possible * 100) : 0;
+  document.getElementById('summaryPct').textContent = `${pct}%`;
+
+  const todayTicks = state.goals.filter(g => state.ticks[tickKey(g.id, selectedDay)]).length;
+  const isToday = dateKey(selectedDay) === dateKey(today());
+  document.getElementById('summaryTitle').textContent = isToday ? 'Today' : selectedDay.toLocaleDateString('en-GB', {weekday:'long', day:'numeric', month:'short'});
+  document.getElementById('summarySub').textContent = todayTicks === 0
+    ? 'No goals ticked yet'
+    : `${todayTicks} of ${state.goals.length} goal${state.goals.length!==1?'s':''} done`;
+}
+
+function getStreak(goalId) {
+  let streak = 0;
+  const d = new Date(today());
+  while (true) {
+    if (state.ticks[tickKey(goalId, d)]) {
+      streak++;
+      d.setDate(d.getDate() - 1);
+    } else break;
+  }
+  return streak;
+}
+
+function renderGoals() {
+  const list = document.getElementById('goalsList');
+  list.innerHTML = '';
+  if (state.goals.length === 0) {
+    list.innerHTML = '<div style="text-align:center;color:var(--ink-soft);font-size:0.85rem;padding:20px;">No goals yet — add one below!</div>';
+    return;
+  }
+  state.goals.forEach(goal => {
+    const color = COLORS[goal.colorIdx || 0];
+    const weekTicks = getWeekTicks(goal.id);
+    const pct = Math.min(100, Math.round(weekTicks / goal.target * 100));
+    const streak = getStreak(goal.id);
+    const ticked = !!state.ticks[tickKey(goal.id, selectedDay)];
+
+    const card = document.createElement('div');
+    card.className = 'goal-card';
+    card.innerHTML = `
+      <div class="goal-header">
+        <div class="goal-icon" style="background:${color.bg};color:${color.icon}">${goal.emoji}</div>
+        <div class="goal-text">
+          <div class="goal-title">${goal.title}</div>
+          ${goal.desc ? `<div class="goal-desc">${goal.desc}</div>` : ''}
+        </div>
+        <div class="goal-card-actions">
+          <button class="icon-btn edit-btn" data-id="${goal.id}" title="Edit">✎</button>
+        </div>
+      </div>
+      <div class="goal-body">
+        <div class="progress-row">
+          <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
+          <span class="progress-label">${weekTicks}/${goal.target} this week</span>
+        </div>
+        <div class="tick-row">
+          <button class="tick-btn ${ticked ? 'ticked' : ''} main-tick" data-id="${goal.id}" title="Toggle today">
+            ${ticked ? '✓' : selectedDay.getDate()}
+          </button>
+        </div>
+        ${streak >= 2 ? `<div class="streak-badge">🔥 ${streak}-day streak</div>` : ''}
+      </div>
+      ${goal.hasNotes ? `
+      <div class="goal-notes-wrap">
+        <div class="notes-label">✏️ Today's note</div>
+        <textarea
+          class="goal-notes-textarea"
+          data-goal-id="${goal.id}"
+          placeholder="Write your thoughts here…"
+        >${(state.notes && state.notes[noteKey(goal.id, selectedDay)]) || ''}</textarea>
+        <div class="notes-saved-indicator" id="saved_${goal.id}">Saved ✓</div>
+      </div>` : ''}
+    `;
+    list.appendChild(card);
+  });
+
+  list.querySelectorAll('.main-tick').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.id;
+      const k = tickKey(id, selectedDay);
+      if (state.ticks[k]) delete state.ticks[k];
+      else state.ticks[k] = true;
+      saveState();
+      renderDayStrip();
+      renderGoals();
+      renderSummary();
+    });
+  });
+
+  list.querySelectorAll('.edit-btn').forEach(btn => {
+    btn.addEventListener('click', () => openModal(btn.dataset.id));
+  });
+
+  // Notes autosave
+  list.querySelectorAll('.goal-notes-textarea').forEach(ta => {
+    let saveTimer;
+    ta.addEventListener('input', () => {
+      const gid = ta.dataset.goalId;
+      const k = noteKey(gid, selectedDay);
+      if (!state.notes) state.notes = {};
+      state.notes[k] = ta.value;
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => {
+        saveState();
+        const ind = document.getElementById('saved_' + gid);
+        if (ind) {
+          ind.classList.add('show');
+          setTimeout(() => ind.classList.remove('show'), 1800);
+        }
+      }, 600);
+    });
+  });
+}
+
+// Modal
+let editingId = null;
+let selectedEmoji = EMOJIS[0];
+let selectedColorIdx = 0;
+
+function openModal(goalId) {
+  editingId = goalId || null;
+  const modal = document.getElementById('modalOverlay');
+  document.getElementById('modalTitle').textContent = editingId ? 'Edit Goal' : 'New Goal';
+  document.getElementById('modalDelete').style.display = editingId ? '' : 'none';
+
+  if (editingId) {
+    const g = state.goals.find(g => g.id === editingId);
+    document.getElementById('inputTitle').value = g.title;
+    document.getElementById('inputDesc').value = g.desc || '';
+    document.getElementById('inputTarget').value = g.target;
+    document.getElementById('inputHasNotes').checked = !!g.hasNotes;
+    selectedEmoji = g.emoji;
+    selectedColorIdx = g.colorIdx || 0;
+  } else {
+    document.getElementById('inputTitle').value = '';
+    document.getElementById('inputDesc').value = '';
+    document.getElementById('inputTarget').value = '3';
+    document.getElementById('inputHasNotes').checked = false;
+    selectedEmoji = EMOJIS[0];
+    selectedColorIdx = 0;
+  }
+
+  renderEmojiGrid();
+  renderColorGrid();
+  modal.classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  editingId = null;
+}
+
+function renderEmojiGrid() {
+  const grid = document.getElementById('emojiGrid');
+  grid.innerHTML = '';
+  EMOJIS.forEach(e => {
+    const btn = document.createElement('button');
+    btn.className = `emoji-opt ${e === selectedEmoji ? 'selected' : ''}`;
+    btn.textContent = e;
+    btn.addEventListener('click', () => {
+      selectedEmoji = e;
+      renderEmojiGrid();
+    });
+    grid.appendChild(btn);
+  });
+}
+
+function renderColorGrid() {
+  const grid = document.getElementById('colorGrid');
+  grid.innerHTML = '';
+  COLORS.forEach((c, i) => {
+    const btn = document.createElement('button');
+    btn.className = `color-opt ${i === selectedColorIdx ? 'selected' : ''}`;
+    btn.style.background = c.icon;
+    btn.addEventListener('click', () => {
+      selectedColorIdx = i;
+      renderColorGrid();
+    });
+    grid.appendChild(btn);
+  });
+}
+
+document.getElementById('addGoalBtn').addEventListener('click', () => openModal(null));
+document.getElementById('modalCancel').addEventListener('click', closeModal);
+document.getElementById('modalOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+});
+
+document.getElementById('modalSave').addEventListener('click', () => {
+  const title = document.getElementById('inputTitle').value.trim();
+  if (!title) { document.getElementById('inputTitle').focus(); return; }
+  const target = parseInt(document.getElementById('inputTarget').value);
+  const desc = document.getElementById('inputDesc').value.trim();
+
+  if (editingId) {
+    const g = state.goals.find(g => g.id === editingId);
+    g.title = title; g.desc = desc; g.target = target;
+    g.emoji = selectedEmoji; g.colorIdx = selectedColorIdx;
+    g.hasNotes = document.getElementById('inputHasNotes').checked;
+  } else {
+    state.goals.push({
+      id: 'g' + Date.now(),
+      title, desc, target,
+      emoji: selectedEmoji,
+      colorIdx: selectedColorIdx,
+      hasNotes: document.getElementById('inputHasNotes').checked,
+    });
+  }
+  saveState();
+  closeModal();
+  renderGoals();
+  renderSummary();
+  renderDayStrip();
+});
+
+document.getElementById('modalDelete').addEventListener('click', () => {
+  if (!editingId) return;
+  if (confirm('Remove this goal? Your tick history for it will also be deleted.')) {
+    state.goals = state.goals.filter(g => g.id !== editingId);
+    // Clean up ticks
+    Object.keys(state.ticks).forEach(k => {
+      if (k.startsWith(editingId + '_')) delete state.ticks[k];
+    });
+    saveState();
+    closeModal();
+    renderGoals();
+    renderSummary();
+    renderDayStrip();
+  }
+});
+
+document.getElementById('prevWeek').addEventListener('click', () => {
+  state.weekOffset--;
+  saveState();
+  renderWeekNav();
+  renderDayStrip();
+  renderSummary();
+});
+
+document.getElementById('nextWeek').addEventListener('click', () => {
+  state.weekOffset++;
+  saveState();
+  renderWeekNav();
+  renderDayStrip();
+  renderSummary();
+});
+
+// Init
+loadState();
+renderHeader();
+renderWeekNav();
+renderDayStrip();
+renderGoals();
+renderSummary();
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(r => console.log('SW registered:', r.scope))
+      .catch(e => console.warn('SW failed:', e));
+  });
+}
+</script>
+</body>
+</html>
