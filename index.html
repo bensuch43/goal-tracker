@@ -54,10 +54,12 @@
     max-width: 680px;
     margin: 0 auto;
     display: flex;
-    align-items: baseline;
+    align-items: center;
     justify-content: space-between;
     gap: 12px;
   }
+
+  .header-left { display: flex; flex-direction: column; gap: 2px; }
 
   .header-title {
     font-family: 'DM Serif Display', serif;
@@ -69,8 +71,21 @@
   .header-date {
     font-size: 0.8rem;
     color: var(--ink-soft);
-    white-space: nowrap;
   }
+
+  .settings-btn {
+    width: 36px; height: 36px;
+    border: 1.5px solid #DEDAD5;
+    border-radius: 10px;
+    background: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ink-soft);
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+  .settings-btn:hover { background: var(--bg); color: var(--ink); }
 
   .week-nav {
     background: var(--surface);
@@ -98,8 +113,7 @@
     background: none;
     border: 1px solid var(--ink-faint);
     border-radius: var(--radius-sm);
-    width: 32px;
-    height: 32px;
+    width: 32px; height: 32px;
     cursor: pointer;
     font-size: 1rem;
     color: var(--ink-soft);
@@ -115,6 +129,45 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
+  }
+
+  /* Permission banner */
+  .notif-banner {
+    background: var(--accent-light);
+    border: 1.5px solid #C5DDD9;
+    border-radius: var(--radius);
+    padding: 14px 16px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  .notif-banner-icon { font-size: 1.4rem; flex-shrink: 0; }
+  .notif-banner-text { flex: 1; }
+  .notif-banner-title { font-weight: 600; font-size: 0.9rem; color: var(--accent-dark); margin-bottom: 2px; }
+  .notif-banner-sub { font-size: 0.78rem; color: var(--accent); }
+  .notif-banner-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 8px 14px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: background 0.15s;
+  }
+  .notif-banner-btn:hover { background: var(--accent-dark); }
+  .notif-banner-dismiss {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    color: var(--ink-faint);
+    padding: 4px;
+    flex-shrink: 0;
   }
 
   /* Day strip */
@@ -143,27 +196,9 @@
   .day-chip.active { border-color: var(--accent); background: var(--accent-light); }
   .day-chip.today .day-num { color: var(--accent); font-weight: 700; }
 
-  .day-name {
-    font-size: 0.65rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--ink-soft);
-  }
-
-  .day-num {
-    font-size: 1rem;
-    font-weight: 500;
-    color: var(--ink);
-  }
-
-  .day-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--ink-faint);
-  }
-
+  .day-name { font-size: 0.65rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-soft); }
+  .day-num { font-size: 1rem; font-weight: 500; color: var(--ink); }
+  .day-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--ink-faint); }
   .day-dot.has-ticks { background: var(--accent); }
 
   /* Goal cards */
@@ -182,470 +217,275 @@
   }
 
   .goal-icon {
-    width: 36px;
-    height: 36px;
+    width: 36px; height: 36px;
     border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     font-size: 1.1rem;
     flex-shrink: 0;
   }
 
   .goal-text { flex: 1; min-width: 0; }
+  .goal-title { font-weight: 600; font-size: 0.95rem; color: var(--ink); line-height: 1.3; margin-bottom: 3px; }
+  .goal-desc { font-size: 0.78rem; color: var(--ink-soft); line-height: 1.4; }
 
-  .goal-title {
-    font-weight: 600;
-    font-size: 0.95rem;
-    color: var(--ink);
-    line-height: 1.3;
-    margin-bottom: 3px;
+  .goal-reminder-badge {
+    display: inline-flex; align-items: center; gap: 3px;
+    font-size: 0.7rem; font-weight: 600;
+    color: var(--accent); background: var(--accent-light);
+    padding: 2px 7px; border-radius: 99px; margin-top: 4px;
   }
 
-  .goal-desc {
-    font-size: 0.78rem;
-    color: var(--ink-soft);
-    line-height: 1.4;
-  }
+  .goal-body { padding: 0 18px 16px; }
 
-  .goal-body {
-    padding: 0 18px 16px;
-  }
+  .progress-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .progress-bar-wrap { flex: 1; height: 6px; background: var(--bg); border-radius: 99px; overflow: hidden; }
+  .progress-bar-fill { height: 100%; border-radius: 99px; background: var(--accent); transition: width 0.4s ease; }
+  .progress-label { font-size: 0.75rem; font-weight: 600; color: var(--ink-soft); white-space: nowrap; }
 
-  /* Progress bar */
-  .progress-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 12px;
-  }
-
-  .progress-bar-wrap {
-    flex: 1;
-    height: 6px;
-    background: var(--bg);
-    border-radius: 99px;
-    overflow: hidden;
-  }
-
-  .progress-bar-fill {
-    height: 100%;
-    border-radius: 99px;
-    background: var(--accent);
-    transition: width 0.4s ease;
-  }
-
-  .progress-label {
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--ink-soft);
-    white-space: nowrap;
-  }
-
-  /* Tick row */
-  .tick-row {
-    display: flex;
-    gap: 6px;
-    flex-wrap: wrap;
-  }
+  .tick-row { display: flex; gap: 6px; flex-wrap: wrap; }
 
   .tick-btn {
-    width: 36px;
-    height: 36px;
+    width: 36px; height: 36px;
     border-radius: var(--radius-sm);
     border: 2px solid var(--ink-faint);
     background: var(--bg);
     cursor: pointer;
-    font-size: 0.7rem;
-    font-weight: 600;
+    font-size: 0.7rem; font-weight: 600;
     color: var(--ink-soft);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     transition: all 0.15s;
     user-select: none;
   }
-
   .tick-btn:hover { border-color: var(--accent); }
+  .tick-btn.ticked { background: var(--accent); border-color: var(--accent); color: white; font-size: 1rem; }
 
-  .tick-btn.ticked {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: white;
-    font-size: 1rem;
-  }
-
-  /* Streak badge */
   .streak-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 0.72rem;
-    font-weight: 600;
-    color: var(--gold);
-    background: var(--gold-light);
-    padding: 3px 8px;
-    border-radius: 99px;
-    margin-top: 10px;
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 0.72rem; font-weight: 600;
+    color: var(--gold); background: var(--gold-light);
+    padding: 3px 8px; border-radius: 99px; margin-top: 10px;
   }
 
-  /* Add goal */
-  .add-btn {
-    width: 100%;
-    padding: 14px;
-    background: none;
-    border: 2px dashed var(--ink-faint);
-    border-radius: var(--radius);
-    font-family: 'Inter', sans-serif;
-    font-size: 0.9rem;
-    color: var(--ink-soft);
-    cursor: pointer;
-    transition: all 0.15s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-  }
-
-  .add-btn:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-    background: var(--accent-light);
-  }
-
-  /* Modal */
-  .modal-overlay {
-    position: fixed; inset: 0;
-    background: rgba(0,0,0,0.4);
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    z-index: 100;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s;
-  }
-
-  .modal-overlay.open {
-    opacity: 1;
-    pointer-events: all;
-  }
-
-  .modal {
-    background: var(--surface);
-    border-radius: 20px 20px 0 0;
-    padding: 24px;
-    width: 100%;
-    max-width: 680px;
-    transform: translateY(100%);
-    transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
-    max-height: 90vh;
-    overflow-y: auto;
-  }
-
-  .modal-overlay.open .modal {
-    transform: translateY(0);
-  }
-
-  .modal-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: 1.3rem;
-    margin-bottom: 20px;
-  }
-
-  .form-group {
-    margin-bottom: 16px;
-  }
-
-  label {
-    display: block;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--ink-soft);
-    margin-bottom: 6px;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-  }
-
-  input[type="text"], textarea, select {
-    width: 100%;
-    padding: 12px 14px;
-    border: 1.5px solid #DEDAD5;
-    border-radius: var(--radius-sm);
-    font-family: 'Inter', sans-serif;
-    font-size: 0.9rem;
-    color: var(--ink);
-    background: var(--bg);
-    outline: none;
-    transition: border-color 0.15s;
-  }
-
-  input[type="text"]:focus,
-  textarea:focus,
-  select:focus { border-color: var(--accent); }
-
-  textarea { resize: vertical; min-height: 70px; }
-
-  .emoji-grid {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-
-  .emoji-opt {
-    width: 42px;
-    height: 42px;
-    border: 2px solid #DEDAD5;
-    border-radius: var(--radius-sm);
-    background: var(--bg);
-    font-size: 1.2rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.15s;
-  }
-
-  .emoji-opt.selected {
-    border-color: var(--accent);
-    background: var(--accent-light);
-  }
-
-  .color-grid {
-    display: flex;
-    gap: 8px;
-  }
-
-  .color-opt {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    cursor: pointer;
-    border: 3px solid transparent;
-    transition: all 0.15s;
-  }
-
-  .color-opt.selected {
-    border-color: var(--ink);
-    transform: scale(1.15);
-  }
-
-  .modal-actions {
-    display: flex;
-    gap: 10px;
-    margin-top: 20px;
-  }
-
-  .btn {
-    flex: 1;
-    padding: 14px;
-    border-radius: var(--radius-sm);
-    border: none;
-    font-family: 'Inter', sans-serif;
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-
-  .btn-primary {
-    background: var(--accent);
-    color: white;
-  }
-
-  .btn-primary:hover { background: var(--accent-dark); }
-
-  .btn-ghost {
-    background: var(--bg);
-    color: var(--ink-soft);
-  }
-
-  .btn-ghost:hover { background: #ECEAE7; }
-
-  .btn-danger {
-    background: var(--warn-light);
-    color: var(--warn);
-    flex: 0 0 auto;
-    padding: 14px 18px;
-  }
-
-  /* Weekly summary */
-  .summary-card {
-    background: var(--accent-light);
-    border: 1.5px solid #C5DDD9;
-    border-radius: var(--radius);
-    padding: 16px 18px;
-    display: flex;
-    gap: 16px;
-    align-items: center;
-  }
-
-  .summary-big {
-    font-family: 'DM Serif Display', serif;
-    font-size: 2.2rem;
-    color: var(--accent-dark);
-    line-height: 1;
-  }
-
-  .summary-text {
-    flex: 1;
-  }
-
-  .summary-title {
-    font-weight: 600;
-    font-size: 0.9rem;
-    color: var(--accent-dark);
-    margin-bottom: 3px;
-  }
-
-  .summary-sub {
-    font-size: 0.78rem;
-    color: var(--accent);
-  }
-
-  .section-label {
-    font-size: 0.72rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--ink-faint);
-    padding: 0 2px;
-    margin-bottom: -8px;
-  }
-
-  .goal-card-actions {
-    display: flex;
-    gap: 6px;
-    margin-left: auto;
-    flex-shrink: 0;
-  }
-
-  .icon-btn {
-    width: 28px;
-    height: 28px;
-    border: none;
-    background: none;
-    cursor: pointer;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--ink-faint);
-    font-size: 0.85rem;
-    transition: all 0.15s;
-    padding: 0;
-  }
-
-  .icon-btn:hover { background: var(--bg); color: var(--ink-soft); }
-
-  /* Notes area */
+  /* Notes */
   .goal-notes-wrap {
     padding: 0 18px 16px;
     border-top: 1px solid #F0EDE9;
     margin-top: 2px;
   }
-
   .notes-label {
-    font-size: 0.7rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
+    font-size: 0.7rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.06em;
     color: var(--ink-faint);
-    margin-bottom: 6px;
-    margin-top: 12px;
-    display: flex;
-    align-items: center;
-    gap: 5px;
+    margin-bottom: 6px; margin-top: 12px;
+    display: flex; align-items: center; gap: 5px;
   }
-
   .goal-notes-textarea {
-    width: 100%;
-    min-height: 72px;
+    width: 100%; min-height: 72px;
     padding: 10px 12px;
     background: var(--bg);
     border: 1.5px solid #E0DDD8;
     border-radius: var(--radius-sm);
     font-family: 'Inter', sans-serif;
-    font-size: 0.85rem;
-    color: var(--ink);
-    line-height: 1.5;
-    resize: vertical;
-    outline: none;
-    transition: border-color 0.15s;
+    font-size: 0.85rem; color: var(--ink);
+    line-height: 1.5; resize: vertical;
+    outline: none; transition: border-color 0.15s;
   }
-
-  .goal-notes-textarea:focus {
-    border-color: var(--accent);
-  }
-
-  .goal-notes-textarea::placeholder {
-    color: var(--ink-faint);
-  }
-
+  .goal-notes-textarea:focus { border-color: var(--accent); }
+  .goal-notes-textarea::placeholder { color: var(--ink-faint); }
   .notes-saved-indicator {
-    font-size: 0.7rem;
-    color: var(--accent);
-    margin-top: 4px;
-    height: 14px;
-    transition: opacity 0.3s;
-    opacity: 0;
+    font-size: 0.7rem; color: var(--accent);
+    margin-top: 4px; height: 14px;
+    transition: opacity 0.3s; opacity: 0;
   }
-
   .notes-saved-indicator.show { opacity: 1; }
 
-  /* Toggle switch for modal */
-  .toggle-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 4px 0;
+  /* Add goal */
+  .add-btn {
+    width: 100%; padding: 14px;
+    background: none;
+    border: 2px dashed var(--ink-faint);
+    border-radius: var(--radius);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem; color: var(--ink-soft);
+    cursor: pointer; transition: all 0.15s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .add-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+
+  /* Summary */
+  .summary-card {
+    background: var(--accent-light);
+    border: 1.5px solid #C5DDD9;
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    display: flex; gap: 16px; align-items: center;
+  }
+  .summary-big { font-family: 'DM Serif Display', serif; font-size: 2.2rem; color: var(--accent-dark); line-height: 1; }
+  .summary-text { flex: 1; }
+  .summary-title { font-weight: 600; font-size: 0.9rem; color: var(--accent-dark); margin-bottom: 3px; }
+  .summary-sub { font-size: 0.78rem; color: var(--accent); }
+
+  .section-label {
+    font-size: 0.72rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--ink-faint); padding: 0 2px; margin-bottom: -8px;
   }
 
-  .toggle-label-text {
-    font-size: 0.88rem;
-    color: var(--ink);
+  .goal-card-actions { display: flex; gap: 6px; margin-left: auto; flex-shrink: 0; }
+
+  .icon-btn {
+    width: 28px; height: 28px;
+    border: none; background: none; cursor: pointer;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--ink-faint); font-size: 0.85rem;
+    transition: all 0.15s; padding: 0;
+  }
+  .icon-btn:hover { background: var(--bg); color: var(--ink-soft); }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.4);
+    display: flex; align-items: flex-end; justify-content: center;
+    z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.2s;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+  .modal {
+    background: var(--surface);
+    border-radius: 20px 20px 0 0;
+    padding: 24px; width: 100%; max-width: 680px;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+    max-height: 90vh; overflow-y: auto;
+  }
+  .modal-overlay.open .modal { transform: translateY(0); }
+
+  .modal-title { font-family: 'DM Serif Display', serif; font-size: 1.3rem; margin-bottom: 20px; }
+
+  .form-group { margin-bottom: 16px; }
+
+  label {
+    display: block;
+    font-size: 0.8rem; font-weight: 600;
+    color: var(--ink-soft); margin-bottom: 6px;
+    text-transform: uppercase; letter-spacing: 0.04em;
   }
 
-  .toggle-switch {
-    position: relative;
-    width: 42px;
-    height: 24px;
-    flex-shrink: 0;
+  input[type="text"], input[type="time"], textarea, select {
+    width: 100%; padding: 12px 14px;
+    border: 1.5px solid #DEDAD5;
+    border-radius: var(--radius-sm);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem; color: var(--ink);
+    background: var(--bg); outline: none;
+    transition: border-color 0.15s;
   }
+  input[type="text"]:focus, input[type="time"]:focus,
+  textarea:focus, select:focus { border-color: var(--accent); }
+  textarea { resize: vertical; min-height: 70px; }
 
-  .toggle-switch input { opacity: 0; width: 0; height: 0; }
-
-  .toggle-track {
-    position: absolute;
-    inset: 0;
-    background: var(--ink-faint);
-    border-radius: 99px;
+  .emoji-grid { display: flex; gap: 8px; flex-wrap: wrap; }
+  .emoji-opt {
+    width: 42px; height: 42px;
+    border: 2px solid #DEDAD5;
+    border-radius: var(--radius-sm);
+    background: var(--bg); font-size: 1.2rem;
     cursor: pointer;
-    transition: background 0.2s;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
   }
+  .emoji-opt.selected { border-color: var(--accent); background: var(--accent-light); }
 
+  .color-grid { display: flex; gap: 8px; }
+  .color-opt {
+    width: 28px; height: 28px; border-radius: 50%;
+    cursor: pointer; border: 3px solid transparent;
+    transition: all 0.15s;
+  }
+  .color-opt.selected { border-color: var(--ink); transform: scale(1.15); }
+
+  .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+
+  .btn {
+    flex: 1; padding: 14px;
+    border-radius: var(--radius-sm); border: none;
+    font-family: 'Inter', sans-serif; font-size: 0.9rem; font-weight: 600;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .btn-primary { background: var(--accent); color: white; }
+  .btn-primary:hover { background: var(--accent-dark); }
+  .btn-ghost { background: var(--bg); color: var(--ink-soft); }
+  .btn-ghost:hover { background: #ECEAE7; }
+  .btn-danger { background: var(--warn-light); color: var(--warn); flex: 0 0 auto; padding: 14px 18px; }
+
+  /* Toggle */
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 4px 0; }
+  .toggle-label-text { font-size: 0.88rem; color: var(--ink); }
+  .toggle-switch { position: relative; width: 42px; height: 24px; flex-shrink: 0; }
+  .toggle-switch input { opacity: 0; width: 0; height: 0; }
+  .toggle-track {
+    position: absolute; inset: 0;
+    background: var(--ink-faint); border-radius: 99px;
+    cursor: pointer; transition: background 0.2s;
+  }
   .toggle-track::after {
-    content: '';
-    position: absolute;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: white;
-    top: 3px;
-    left: 3px;
-    transition: transform 0.2s;
+    content: ''; position: absolute;
+    width: 18px; height: 18px;
+    border-radius: 50%; background: white;
+    top: 3px; left: 3px; transition: transform 0.2s;
   }
-
   .toggle-switch input:checked + .toggle-track { background: var(--accent); }
   .toggle-switch input:checked + .toggle-track::after { transform: translateX(18px); }
+
+  /* Reminder time row */
+  .reminder-time-row {
+    display: flex; align-items: center; gap: 10px;
+    margin-top: 10px; padding: 10px 12px;
+    background: var(--bg); border-radius: var(--radius-sm);
+    border: 1.5px solid #DEDAD5;
+  }
+  .reminder-time-row label { margin: 0; text-transform: none; letter-spacing: 0; font-size: 0.85rem; color: var(--ink); }
+  .reminder-time-row input[type="time"] {
+    width: auto; padding: 6px 10px; font-size: 0.85rem; flex: 1;
+  }
+
+  /* Settings modal */
+  .settings-section { margin-bottom: 20px; }
+  .settings-section-title {
+    font-size: 0.72rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--ink-faint); margin-bottom: 12px;
+  }
+  .settings-row {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #F0EDE9;
+    gap: 12px;
+  }
+  .settings-row:last-child { border-bottom: none; }
+  .settings-row-label { font-size: 0.9rem; color: var(--ink); }
+  .settings-row-sub { font-size: 0.75rem; color: var(--ink-soft); margin-top: 2px; }
+  .notif-status-chip {
+    font-size: 0.72rem; font-weight: 600;
+    padding: 3px 8px; border-radius: 99px;
+  }
+  .notif-status-chip.granted { background: var(--accent-light); color: var(--accent-dark); }
+  .notif-status-chip.denied { background: var(--warn-light); color: var(--warn); }
+  .notif-status-chip.default { background: var(--gold-light); color: var(--gold); }
 </style>
 </head>
 <body>
 
 <header>
   <div class="header-inner">
-    <span class="header-title">My Goals</span>
-    <span class="header-date" id="headerDate"></span>
+    <div class="header-left">
+      <span class="header-title">My Goals</span>
+      <span class="header-date" id="headerDate"></span>
+    </div>
+    <button class="settings-btn" id="openSettings" title="Settings">⚙️</button>
   </div>
 </header>
 
@@ -658,7 +498,19 @@
 </div>
 
 <div class="main">
+  <!-- Notification permission banner (shown when permission not yet granted) -->
+  <div class="notif-banner" id="notifBanner" style="display:none">
+    <div class="notif-banner-icon">🔔</div>
+    <div class="notif-banner-text">
+      <div class="notif-banner-title">Enable reminders</div>
+      <div class="notif-banner-sub">Get daily nudges to check in on your goals</div>
+    </div>
+    <button class="notif-banner-btn" id="notifBannerAllow">Allow</button>
+    <button class="notif-banner-dismiss" id="notifBannerDismiss" title="Dismiss">✕</button>
+  </div>
+
   <div class="day-strip" id="dayStrip"></div>
+
   <div class="summary-card" id="summaryCard">
     <div class="summary-big" id="summaryPct">—</div>
     <div class="summary-text">
@@ -666,12 +518,13 @@
       <div class="summary-sub" id="summarySub">No goals ticked yet today</div>
     </div>
   </div>
+
   <div class="section-label">Your Goals</div>
   <div id="goalsList"></div>
   <button class="add-btn" id="addGoalBtn">＋ Add a goal</button>
 </div>
 
-<!-- Modal -->
+<!-- Goal modal -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal">
     <div class="modal-title" id="modalTitle">New Goal</div>
@@ -694,6 +547,20 @@
         <option value="6">6 days</option>
         <option value="7">7 days (daily)</option>
       </select>
+    </div>
+    <div class="form-group">
+      <label>Daily reminder</label>
+      <div class="toggle-row">
+        <span class="toggle-label-text">Remind me about this goal</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="inputHasReminder">
+          <span class="toggle-track"></span>
+        </label>
+      </div>
+      <div class="reminder-time-row" id="reminderTimeRow" style="display:none">
+        <label for="inputReminderTime">Remind me at</label>
+        <input type="time" id="inputReminderTime" value="20:00">
+      </div>
     </div>
     <div class="form-group">
       <label>Notes field</label>
@@ -721,7 +588,58 @@
   </div>
 </div>
 
+<!-- Settings modal -->
+<div class="modal-overlay" id="settingsOverlay">
+  <div class="modal">
+    <div class="modal-title">Settings</div>
+
+    <div class="settings-section">
+      <div class="settings-section-title">Notifications</div>
+
+      <div class="settings-row">
+        <div>
+          <div class="settings-row-label">Permission status</div>
+          <div class="settings-row-sub">Manage in your browser/OS settings</div>
+        </div>
+        <span class="notif-status-chip" id="notifStatusChip">—</span>
+      </div>
+
+      <div class="settings-row">
+        <div>
+          <div class="settings-row-label">Daily check-in reminder</div>
+          <div class="settings-row-sub">A nudge each day to log your goals</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="settingsDailyEnabled">
+          <span class="toggle-track"></span>
+        </label>
+      </div>
+
+      <div class="settings-row" id="dailyTimeRow">
+        <label style="margin:0;text-transform:none;letter-spacing:0;font-size:0.9rem;color:var(--ink)">Check-in time</label>
+        <input type="time" id="settingsDailyTime" value="09:00" style="width:auto;padding:6px 10px;font-size:0.85rem">
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-section-title">Data</div>
+      <div class="settings-row">
+        <div>
+          <div class="settings-row-label">Clear all data</div>
+          <div class="settings-row-sub">Resets goals, ticks, notes and settings</div>
+        </div>
+        <button class="btn btn-danger" style="flex:0 0 auto;padding:8px 14px;font-size:0.82rem" id="clearDataBtn">Reset</button>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-primary" id="settingsSave">Save</button>
+    </div>
+  </div>
+</div>
+
 <script>
+// ─── Constants ───────────────────────────────────────────────────────────────
 const EMOJIS = ['🧘','🚶','📔','🌿','💬','☀️','🎯','💪','🌊','🎵','🍃','❤️'];
 const COLORS = [
   {bg:'#E8F1EF', icon:'#4A7C6F'},
@@ -731,19 +649,27 @@ const COLORS = [
   {bg:'#F0EEFB', icon:'#7A4AC0'},
   {bg:'#EAF5FB', icon:'#2A82B8'},
 ];
+const DAY_NAMES = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 
 const DEFAULT_GOALS = [
-  {id:'g1', title:'Grounding technique', desc:'5-4-3-2-1 senses when spiralling starts', emoji:'🧘', colorIdx:0, target:5},
-  {id:'g2', title:'Worry window', desc:'10 min evening writing, then close notebook', emoji:'📔', colorIdx:1, target:3, hasNotes:true},
-  {id:'g3', title:'One enjoyable activity', desc:'Short walk, coffee outside, or reading', emoji:'🚶', colorIdx:2, target:4},
-  {id:'g4', title:'Wind-down routine', desc:'20 min screen-free before sleep', emoji:'🌿', colorIdx:5, target:3},
-  {id:'g5', title:'Thought challenge', desc:'Write one unhelpful thought and question its evidence', emoji:'💬', colorIdx:3, target:3, hasNotes:true},
+  {id:'g1', title:'Grounding technique', desc:'5-4-3-2-1 senses when spiralling starts', emoji:'🧘', colorIdx:0, target:5, hasNotes:false, hasReminder:false, reminderTime:'08:00'},
+  {id:'g2', title:'Worry window', desc:'10 min evening writing, then close notebook', emoji:'📔', colorIdx:1, target:3, hasNotes:true, hasReminder:true, reminderTime:'20:00'},
+  {id:'g3', title:'One enjoyable activity', desc:'Short walk, coffee outside, or reading', emoji:'🚶', colorIdx:2, target:4, hasNotes:false, hasReminder:false, reminderTime:'10:00'},
+  {id:'g4', title:'Wind-down routine', desc:'20 min screen-free before sleep', emoji:'🌿', colorIdx:5, target:3, hasNotes:false, hasReminder:true, reminderTime:'22:00'},
+  {id:'g5', title:'Thought challenge', desc:'Write one unhelpful thought and question its evidence', emoji:'💬', colorIdx:3, target:3, hasNotes:true, hasReminder:true, reminderTime:'19:00'},
 ];
 
+// ─── State ───────────────────────────────────────────────────────────────────
 let state = {
   goals: [],
-  ticks: {}, // key: "goalId_YYYY-MM-DD" => true
+  ticks: {},
+  notes: {},
   weekOffset: 0,
+  settings: {
+    dailyReminderEnabled: false,
+    dailyReminderTime: '09:00',
+    notifBannerDismissed: false,
+  }
 };
 
 function loadState() {
@@ -754,11 +680,14 @@ function loadState() {
     if (!state.ticks) state.ticks = {};
     if (!state.notes) state.notes = {};
     if (state.weekOffset === undefined) state.weekOffset = 0;
+    if (!state.settings) state.settings = { dailyReminderEnabled: false, dailyReminderTime: '09:00', notifBannerDismissed: false };
+    if (state.settings.notifBannerDismissed === undefined) state.settings.notifBannerDismissed = false;
   } catch(e) {
     state.goals = DEFAULT_GOALS;
     state.ticks = {};
     state.notes = {};
     state.weekOffset = 0;
+    state.settings = { dailyReminderEnabled: false, dailyReminderTime: '09:00', notifBannerDismissed: false };
   }
 }
 
@@ -766,6 +695,7 @@ function saveState() {
   localStorage.setItem('goalTrackerState', JSON.stringify(state));
 }
 
+// ─── Date helpers ─────────────────────────────────────────────────────────────
 function getMonday(date) {
   const d = new Date(date);
   const day = d.getDay();
@@ -775,37 +705,115 @@ function getMonday(date) {
   return d;
 }
 
-function dateKey(date) {
-  return date.toISOString().slice(0,10);
-}
-
-function tickKey(goalId, date) {
-  return `${goalId}_${dateKey(date)}`;
-}
-
-function noteKey(goalId, date) {
-  return `note_${goalId}_${dateKey(date)}`;
-}
+function dateKey(date) { return date.toISOString().slice(0,10); }
+function tickKey(goalId, date) { return `${goalId}_${dateKey(date)}`; }
+function noteKey(goalId, date) { return `note_${goalId}_${dateKey(date)}`; }
 
 function today() {
-  const d = new Date();
-  d.setHours(0,0,0,0);
-  return d;
+  const d = new Date(); d.setHours(0,0,0,0); return d;
 }
 
 function getWeekDays(offset) {
   const monday = getMonday(today());
   monday.setDate(monday.getDate() + offset * 7);
   return Array.from({length:7}, (_,i) => {
-    const d = new Date(monday);
-    d.setDate(d.getDate() + i);
-    return d;
+    const d = new Date(monday); d.setDate(d.getDate() + i); return d;
   });
 }
 
-const DAY_NAMES = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 let selectedDay = today();
 
+// ─── Notifications ────────────────────────────────────────────────────────────
+let notifTimers = [];
+
+function getNotifPermission() {
+  if (!('Notification' in window)) return 'unsupported';
+  return Notification.permission;
+}
+
+async function requestNotifPermission() {
+  if (!('Notification' in window)) return 'unsupported';
+  const result = await Notification.requestPermission();
+  return result;
+}
+
+async function sendNotification(title, body, tag) {
+  if (getNotifPermission() !== 'granted') return;
+  if (!navigator.serviceWorker) return;
+  const reg = await navigator.serviceWorker.ready;
+  reg.active.postMessage({ type: 'SHOW_NOTIFICATION', title, body, tag });
+}
+
+function msUntilTime(timeStr) {
+  // timeStr = "HH:MM"
+  const [h, m] = timeStr.split(':').map(Number);
+  const now = new Date();
+  const target = new Date();
+  target.setHours(h, m, 0, 0);
+  if (target <= now) target.setDate(target.getDate() + 1); // schedule for tomorrow if passed
+  return target - now;
+}
+
+function scheduleAllReminders() {
+  // Clear existing timers
+  notifTimers.forEach(t => clearTimeout(t));
+  notifTimers = [];
+
+  if (getNotifPermission() !== 'granted') return;
+
+  // Daily check-in reminder
+  if (state.settings.dailyReminderEnabled) {
+    const ms = msUntilTime(state.settings.dailyReminderTime);
+    const t = setTimeout(() => {
+      sendNotification('Goal Tracker ✅', 'Time to check in on your goals for today!', 'daily-checkin');
+      scheduleAllReminders(); // reschedule for next day
+    }, ms);
+    notifTimers.push(t);
+  }
+
+  // Per-goal reminders
+  state.goals.forEach(goal => {
+    if (!goal.hasReminder || !goal.reminderTime) return;
+    const ms = msUntilTime(goal.reminderTime);
+    const t = setTimeout(() => {
+      sendNotification(
+        `${goal.emoji} ${goal.title}`,
+        goal.desc || 'Time for your goal!',
+        `goal-${goal.id}`
+      );
+      // Reschedule for next day
+      scheduleAllReminders();
+    }, ms);
+    notifTimers.push(t);
+  });
+}
+
+function renderNotifBanner() {
+  const banner = document.getElementById('notifBanner');
+  const perm = getNotifPermission();
+  if (perm === 'unsupported' || perm === 'granted' || perm === 'denied' || state.settings.notifBannerDismissed) {
+    banner.style.display = 'none';
+  } else {
+    banner.style.display = 'flex';
+  }
+}
+
+document.getElementById('notifBannerAllow').addEventListener('click', async () => {
+  const result = await requestNotifPermission();
+  if (result === 'granted') {
+    scheduleAllReminders();
+  }
+  renderNotifBanner();
+  updateNotifStatusChip();
+});
+
+document.getElementById('notifBannerDismiss').addEventListener('click', () => {
+  state.settings.notifBannerDismissed = true;
+  saveState();
+  renderNotifBanner();
+});
+
+// ─── Header / week nav ────────────────────────────────────────────────────────
 function renderHeader() {
   const opts = {weekday:'long', day:'numeric', month:'long'};
   document.getElementById('headerDate').textContent = today().toLocaleDateString('en-GB', opts);
@@ -818,6 +826,7 @@ function renderWeekNav() {
   document.getElementById('weekLabel').textContent = `${start} – ${end}`;
 }
 
+// ─── Day strip ────────────────────────────────────────────────────────────────
 function hasTicks(date) {
   return state.goals.some(g => state.ticks[tickKey(g.id, date)]);
 }
@@ -846,6 +855,7 @@ function renderDayStrip() {
   });
 }
 
+// ─── Summary ──────────────────────────────────────────────────────────────────
 function getWeekTicks(goalId) {
   const days = getWeekDays(state.weekOffset);
   return days.filter(d => state.ticks[tickKey(goalId, d)]).length;
@@ -865,7 +875,6 @@ function renderSummary() {
   const {total, possible} = getTotalTicksThisWeek();
   const pct = possible > 0 ? Math.round(total / possible * 100) : 0;
   document.getElementById('summaryPct').textContent = `${pct}%`;
-
   const todayTicks = state.goals.filter(g => state.ticks[tickKey(g.id, selectedDay)]).length;
   const isToday = dateKey(selectedDay) === dateKey(today());
   document.getElementById('summaryTitle').textContent = isToday ? 'Today' : selectedDay.toLocaleDateString('en-GB', {weekday:'long', day:'numeric', month:'short'});
@@ -874,16 +883,23 @@ function renderSummary() {
     : `${todayTicks} of ${state.goals.length} goal${state.goals.length!==1?'s':''} done`;
 }
 
+// ─── Goals ────────────────────────────────────────────────────────────────────
 function getStreak(goalId) {
   let streak = 0;
   const d = new Date(today());
   while (true) {
-    if (state.ticks[tickKey(goalId, d)]) {
-      streak++;
-      d.setDate(d.getDate() - 1);
-    } else break;
+    if (state.ticks[tickKey(goalId, d)]) { streak++; d.setDate(d.getDate() - 1); }
+    else break;
   }
   return streak;
+}
+
+function fmt12(timeStr) {
+  if (!timeStr) return '';
+  const [h, m] = timeStr.split(':').map(Number);
+  const ampm = h >= 12 ? 'pm' : 'am';
+  const h12 = h % 12 || 12;
+  return `${h12}:${String(m).padStart(2,'0')}${ampm}`;
 }
 
 function renderGoals() {
@@ -908,6 +924,7 @@ function renderGoals() {
         <div class="goal-text">
           <div class="goal-title">${goal.title}</div>
           ${goal.desc ? `<div class="goal-desc">${goal.desc}</div>` : ''}
+          ${goal.hasReminder ? `<div class="goal-reminder-badge">🔔 ${fmt12(goal.reminderTime)}</div>` : ''}
         </div>
         <div class="goal-card-actions">
           <button class="icon-btn edit-btn" data-id="${goal.id}" title="Edit">✎</button>
@@ -919,7 +936,7 @@ function renderGoals() {
           <span class="progress-label">${weekTicks}/${goal.target} this week</span>
         </div>
         <div class="tick-row">
-          <button class="tick-btn ${ticked ? 'ticked' : ''} main-tick" data-id="${goal.id}" title="Toggle today">
+          <button class="tick-btn ${ticked ? 'ticked' : ''} main-tick" data-id="${goal.id}">
             ${ticked ? '✓' : selectedDay.getDate()}
           </button>
         </div>
@@ -928,11 +945,7 @@ function renderGoals() {
       ${goal.hasNotes ? `
       <div class="goal-notes-wrap">
         <div class="notes-label">✏️ Today's note</div>
-        <textarea
-          class="goal-notes-textarea"
-          data-goal-id="${goal.id}"
-          placeholder="Write your thoughts here…"
-        >${(state.notes && state.notes[noteKey(goal.id, selectedDay)]) || ''}</textarea>
+        <textarea class="goal-notes-textarea" data-goal-id="${goal.id}" placeholder="Write your thoughts here…">${(state.notes && state.notes[noteKey(goal.id, selectedDay)]) || ''}</textarea>
         <div class="notes-saved-indicator" id="saved_${goal.id}">Saved ✓</div>
       </div>` : ''}
     `;
@@ -956,7 +969,6 @@ function renderGoals() {
     btn.addEventListener('click', () => openModal(btn.dataset.id));
   });
 
-  // Notes autosave
   list.querySelectorAll('.goal-notes-textarea').forEach(ta => {
     let saveTimer;
     ta.addEventListener('input', () => {
@@ -968,23 +980,19 @@ function renderGoals() {
       saveTimer = setTimeout(() => {
         saveState();
         const ind = document.getElementById('saved_' + gid);
-        if (ind) {
-          ind.classList.add('show');
-          setTimeout(() => ind.classList.remove('show'), 1800);
-        }
+        if (ind) { ind.classList.add('show'); setTimeout(() => ind.classList.remove('show'), 1800); }
       }, 600);
     });
   });
 }
 
-// Modal
+// ─── Goal modal ───────────────────────────────────────────────────────────────
 let editingId = null;
 let selectedEmoji = EMOJIS[0];
 let selectedColorIdx = 0;
 
 function openModal(goalId) {
   editingId = goalId || null;
-  const modal = document.getElementById('modalOverlay');
   document.getElementById('modalTitle').textContent = editingId ? 'Edit Goal' : 'New Goal';
   document.getElementById('modalDelete').style.display = editingId ? '' : 'none';
 
@@ -994,6 +1002,8 @@ function openModal(goalId) {
     document.getElementById('inputDesc').value = g.desc || '';
     document.getElementById('inputTarget').value = g.target;
     document.getElementById('inputHasNotes').checked = !!g.hasNotes;
+    document.getElementById('inputHasReminder').checked = !!g.hasReminder;
+    document.getElementById('inputReminderTime').value = g.reminderTime || '20:00';
     selectedEmoji = g.emoji;
     selectedColorIdx = g.colorIdx || 0;
   } else {
@@ -1001,14 +1011,24 @@ function openModal(goalId) {
     document.getElementById('inputDesc').value = '';
     document.getElementById('inputTarget').value = '3';
     document.getElementById('inputHasNotes').checked = false;
+    document.getElementById('inputHasReminder').checked = false;
+    document.getElementById('inputReminderTime').value = '20:00';
     selectedEmoji = EMOJIS[0];
     selectedColorIdx = 0;
   }
 
+  updateReminderTimeRow();
   renderEmojiGrid();
   renderColorGrid();
-  modal.classList.add('open');
+  document.getElementById('modalOverlay').classList.add('open');
 }
+
+function updateReminderTimeRow() {
+  const show = document.getElementById('inputHasReminder').checked;
+  document.getElementById('reminderTimeRow').style.display = show ? 'flex' : 'none';
+}
+
+document.getElementById('inputHasReminder').addEventListener('change', updateReminderTimeRow);
 
 function closeModal() {
   document.getElementById('modalOverlay').classList.remove('open');
@@ -1022,10 +1042,7 @@ function renderEmojiGrid() {
     const btn = document.createElement('button');
     btn.className = `emoji-opt ${e === selectedEmoji ? 'selected' : ''}`;
     btn.textContent = e;
-    btn.addEventListener('click', () => {
-      selectedEmoji = e;
-      renderEmojiGrid();
-    });
+    btn.addEventListener('click', () => { selectedEmoji = e; renderEmojiGrid(); });
     grid.appendChild(btn);
   });
 }
@@ -1037,10 +1054,7 @@ function renderColorGrid() {
     const btn = document.createElement('button');
     btn.className = `color-opt ${i === selectedColorIdx ? 'selected' : ''}`;
     btn.style.background = c.icon;
-    btn.addEventListener('click', () => {
-      selectedColorIdx = i;
-      renderColorGrid();
-    });
+    btn.addEventListener('click', () => { selectedColorIdx = i; renderColorGrid(); });
     grid.appendChild(btn);
   });
 }
@@ -1056,22 +1070,23 @@ document.getElementById('modalSave').addEventListener('click', () => {
   if (!title) { document.getElementById('inputTitle').focus(); return; }
   const target = parseInt(document.getElementById('inputTarget').value);
   const desc = document.getElementById('inputDesc').value.trim();
+  const hasReminder = document.getElementById('inputHasReminder').checked;
+  const reminderTime = document.getElementById('inputReminderTime').value;
 
   if (editingId) {
     const g = state.goals.find(g => g.id === editingId);
-    g.title = title; g.desc = desc; g.target = target;
-    g.emoji = selectedEmoji; g.colorIdx = selectedColorIdx;
-    g.hasNotes = document.getElementById('inputHasNotes').checked;
+    Object.assign(g, { title, desc, target, emoji: selectedEmoji, colorIdx: selectedColorIdx,
+      hasNotes: document.getElementById('inputHasNotes').checked, hasReminder, reminderTime });
   } else {
     state.goals.push({
-      id: 'g' + Date.now(),
-      title, desc, target,
-      emoji: selectedEmoji,
-      colorIdx: selectedColorIdx,
+      id: 'g' + Date.now(), title, desc, target,
+      emoji: selectedEmoji, colorIdx: selectedColorIdx,
       hasNotes: document.getElementById('inputHasNotes').checked,
+      hasReminder, reminderTime,
     });
   }
   saveState();
+  scheduleAllReminders();
   closeModal();
   renderGoals();
   renderSummary();
@@ -1082,11 +1097,9 @@ document.getElementById('modalDelete').addEventListener('click', () => {
   if (!editingId) return;
   if (confirm('Remove this goal? Your tick history for it will also be deleted.')) {
     state.goals = state.goals.filter(g => g.id !== editingId);
-    // Clean up ticks
-    Object.keys(state.ticks).forEach(k => {
-      if (k.startsWith(editingId + '_')) delete state.ticks[k];
-    });
+    Object.keys(state.ticks).forEach(k => { if (k.startsWith(editingId + '_')) delete state.ticks[k]; });
     saveState();
+    scheduleAllReminders();
     closeModal();
     renderGoals();
     renderSummary();
@@ -1094,30 +1107,75 @@ document.getElementById('modalDelete').addEventListener('click', () => {
   }
 });
 
+// ─── Settings modal ───────────────────────────────────────────────────────────
+function updateNotifStatusChip() {
+  const chip = document.getElementById('notifStatusChip');
+  const perm = getNotifPermission();
+  chip.textContent = perm === 'granted' ? '✓ Allowed' : perm === 'denied' ? '✕ Blocked' : perm === 'unsupported' ? 'Not supported' : 'Not set';
+  chip.className = 'notif-status-chip ' + (perm === 'granted' ? 'granted' : perm === 'denied' ? 'denied' : 'default');
+}
+
+function openSettings() {
+  updateNotifStatusChip();
+  document.getElementById('settingsDailyEnabled').checked = state.settings.dailyReminderEnabled;
+  document.getElementById('settingsDailyTime').value = state.settings.dailyReminderTime || '09:00';
+  document.getElementById('dailyTimeRow').style.display = state.settings.dailyReminderEnabled ? 'flex' : 'none';
+  document.getElementById('settingsOverlay').classList.add('open');
+}
+
+document.getElementById('openSettings').addEventListener('click', openSettings);
+document.getElementById('settingsOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('settingsOverlay')) document.getElementById('settingsOverlay').classList.remove('open');
+});
+
+document.getElementById('settingsDailyEnabled').addEventListener('change', function() {
+  document.getElementById('dailyTimeRow').style.display = this.checked ? 'flex' : 'none';
+  // Auto-request permission if enabling
+  if (this.checked && getNotifPermission() === 'default') {
+    requestNotifPermission().then(r => { updateNotifStatusChip(); renderNotifBanner(); });
+  }
+});
+
+document.getElementById('settingsSave').addEventListener('click', async () => {
+  const enabled = document.getElementById('settingsDailyEnabled').checked;
+  if (enabled && getNotifPermission() === 'default') {
+    await requestNotifPermission();
+  }
+  state.settings.dailyReminderEnabled = enabled;
+  state.settings.dailyReminderTime = document.getElementById('settingsDailyTime').value;
+  saveState();
+  scheduleAllReminders();
+  updateNotifStatusChip();
+  renderNotifBanner();
+  document.getElementById('settingsOverlay').classList.remove('open');
+});
+
+document.getElementById('clearDataBtn').addEventListener('click', () => {
+  if (confirm('This will delete all goals, ticks, notes and settings. Are you sure?')) {
+    localStorage.removeItem('goalTrackerState');
+    location.reload();
+  }
+});
+
+// ─── Week nav ─────────────────────────────────────────────────────────────────
 document.getElementById('prevWeek').addEventListener('click', () => {
-  state.weekOffset--;
-  saveState();
-  renderWeekNav();
-  renderDayStrip();
-  renderSummary();
+  state.weekOffset--; saveState(); renderWeekNav(); renderDayStrip(); renderSummary();
 });
-
 document.getElementById('nextWeek').addEventListener('click', () => {
-  state.weekOffset++;
-  saveState();
-  renderWeekNav();
-  renderDayStrip();
-  renderSummary();
+  state.weekOffset++; saveState(); renderWeekNav(); renderDayStrip(); renderSummary();
 });
 
-// Init
+// ─── Init ─────────────────────────────────────────────────────────────────────
 loadState();
 renderHeader();
 renderWeekNav();
 renderDayStrip();
 renderGoals();
 renderSummary();
+renderNotifBanner();
+scheduleAllReminders();
 </script>
+
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
